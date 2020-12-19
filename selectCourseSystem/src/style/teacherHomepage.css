@@ -1,0 +1,97 @@
+*{
+  margin:0;
+  padding:0;
+}
+#app{
+  width: 100%;
+  height: 100%;
+  background-color: #e9ebec;
+}
+#ban{
+  position: relative;
+  background-color: #7c9096;
+  color: #ffffff;
+  font-size: 20px;
+  height: 60px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-shadow: 1px 1px 8px #5e5656;
+}
+#ban .el-icon-notebook-2{
+  font-size: 34px;
+  margin-top:2px;
+}
+#ban-right {
+  position: absolute;
+  right: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.transformWord {
+  cursor:pointer;
+  transition: all 1s;
+  margin-right: 30px;
+}
+.transformWord:hover{
+  color: rgb(68, 66, 66);
+  font-size: 25px;
+}
+.dividerLine{
+  display: inline-block;
+  height: 30px;
+  border-left:2px #ffffff solid;
+  margin-right: 10px;
+}
+#title{
+  font-family:"Microsoft YaHei";
+  font-size: 30px;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+#courseShowDiv{
+  margin:20 auto;
+  width: 1000px;
+  height: 300px;
+  text-align: center;
+}
+.el-dialog__title{
+  text-shadow: 0px 1px 1px #5e5656;
+  font-size: 20px;
+}
+#courseShowDivTitle{
+  font-size: 30px;
+  color: #494040;
+  margin: 30px 0;
+}
+
+#courseShowDiv .el-table--fit{
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+}
+
+.form-input{
+  width: 200px;
+}
+
+.el-input-number__decrease{
+  height: 38px;
+}
+.el-input-number__decrease > .el-icon-minus{
+  margin-top: 14px;
+}
+
+.el-input-number__increase{
+  height: 38px;
+}
+.el-input-number__increase > .el-icon-plus{
+  margin-top: 14px;
+}
+
+.studentTable{
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+

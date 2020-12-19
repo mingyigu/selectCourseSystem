@@ -1,0 +1,239 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="../expand/vue.js"></script>
+    <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- <!element-ui> -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    
+    <link rel="stylesheet" href="../style/teacherHomepage.css">
+  </head>
+  <body>
+    <div id="app">
+      <div id="ban">
+        <i class="el-icon-notebook-2"></i>
+        <span id="title">选课系统—教师端</span>
+        <div id="ban-right">
+          
+          <span @click="showCreateCourse" class="transformWord">创建课程</span>
+          <span @click="toRegister" class="transformWord">退出登入</span>
+          <div class="dividerLine"></div>
+          <span><i class="el-icon-user-solid"></i> {{teacherName}}</span>
+        </div>
+        
+      </div>
+      <div id="courseShowDiv">
+        <p id="courseShowDivTitle">我的课程</p>
+        <el-table :data="courseShowNum" width='800px' id="courseShowNum" max-height="400" v-loading="myCourseNumLoading">
+          <el-table-column property="course_name" label="课程名称" align="center" width="200"></el-table-column>
+          <el-table-column property="course_type" label="课程类型" align="center" width="150"></el-table-column>
+          <el-table-column property="max_num" label="课程容量" align="center" width="150"></el-table-column>
+          <el-table-column property="course_id" label="课程id" align="center" width="200"></el-table-column>
+          <el-table-column
+            label="操作" align="center" width="300px">
+            <template slot-scope="scope">
+              <el-button  @click.native.prevent="showMyCourseStudent(scope.row)" type="info" round>学生信息</el-button>
+              <el-button  @click.native.prevent="handleDeleteCourse(scope.row)" type="danger" round>删除此课</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <el-dialog title="创建课程" :visible.sync="isShowCreateCourse"  :before-close="handleCloseDialog">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="课程名称" prop="course_name">
+            <el-input v-model="ruleForm.course_name" class="form-input"></el-input>
+          </el-form-item>
+          <el-form-item label="课程类型" prop="course_type">
+            <el-select v-model="ruleForm.course_type" clearable placeholder="请选择课程类型" class="form-input">
+              <el-option
+                v-for="item in courseTypeNum"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="课程容量" prop="max_num">
+            <el-input-number v-model="ruleForm.max_num"></el-input-number>
+          </el-form-item>
+          
+          <el-form-item>
+              <el-button type="primary" @click="handleCreatCourse('ruleForm')">立即创建</el-button>
+              <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
+              <el-button @click="handleCloseDialog">取 消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <el-dialog title="学生信息" :visible.sync="isShowMyCourseStudent" width="400px"  >
+        <div class="studentTable">
+          <el-table
+            :data="studentNum"
+            border
+            max-height="400">
+            <el-table-column
+              align="center"
+              prop="student_name"
+              label="学生姓名">
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-dialog>
+    </div>
+  </body>
+</html>
+
+<script>
+  let loc = location.href;
+  let n1 = loc.length;//地址的总长度
+  let n2 = loc.indexOf("=");//取得=号的位置
+  if(n2 == -1){
+    window.location.href="../registerLogin/login.html";
+  }
+  let userName = decodeURI(loc.substr(n2+1, n1-n2));//从=号后面的内容
+  console.log('userName'+userName)
+
+  let vm = new Vue({
+  el: '#app',
+  data: {
+    teacherName:'',
+    courseShowNum:[],
+    isShowCreateCourse:false,
+    isShowMyCourseStudent:false,
+    courseShowNumLoading:false,
+    myCourseNumLoading:false,
+    studentNum: [],
+    courseTypeNum: [
+      {
+      value:'English',
+      label:'英语'
+    },{
+      value:'Math',
+      label:'数学'
+    },{
+      value:'PublicCourse',
+      label:'公选'
+    },{
+      value:'Music',
+      label:'音乐'
+    },{
+      value:'Politics',
+      label:'政治'
+    },{
+      value:'all',
+      label:'全部'
+    }],
+    ruleForm:{
+      course_name: '',
+      course_type: '',
+      max_num: 20,
+      course_id: ''
+    },
+    rules: {
+      course_name: [
+        { required: true, message: '请输入课程名称', trigger: 'blur' }
+      ],
+      course_type: [
+        { required: true, message: '请选择课程类型', trigger: 'change' }
+      ],
+      max_num: [
+        { required: true, message: '请选输入课程容量', trigger: 'change' }
+      ]}
+  },
+  mounted:function(){
+    this.teacherName = userName;
+    this.$message({type:'info',message:'欢迎回来,' + userName})
+    this.searchMyCourse();
+  },
+  methods: {
+    toRegister(){
+      this.$confirm('确认退出?', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '退出成功!'
+          });
+          window.location.href="../registerLogin/login.html";
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消退出'
+          });          
+        });
+      
+    },
+    searchMyCourse(){
+      this.myCourseNumLoading = true;
+      this.$http.post('../api/teacher/searchMyCourse.php',{teacher_name:userName},{emulateJSON:true}).then(function(res){
+          console.log('searchMyCourse',res.body)
+          this.courseShowNum = res.body;
+          setTimeout(() => {
+              this.myCourseNumLoading = false;
+          },300)
+        })
+    },
+    showCreateCourse(){
+      this.isShowCreateCourse = true;
+    },
+    handleCreatCourse(formName){
+      this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let timestamp = (new Date()).valueOf() + '';
+            this.ruleForm.course_id = timestamp;
+            console.log('ruleForm',this.ruleForm);
+            this.myCourseNumLoading = true;
+            this.$http.post('../api/teacher/createCourse.php',Object.assign({},this.ruleForm,{teacher_name:userName}),{emulateJSON:true}).then(function(res){
+              this.$message({type:'success',message:res.body})
+              this.searchMyCourse();
+              this.handleCloseDialog();
+              setTimeout(() => {
+                this.myCourseNumLoading = false;
+              },500)
+            })
+          } else {
+            this.$message('请完善信息');
+            return false;
+          }
+        });
+    },
+    handleDeleteCourse(row){
+      this.$confirm('确认删除该课程?', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.myCourseNumLoading = true;
+          this.$http.post('../api/teacher/deleteCourse.php',{course_id:row.course_id,teacher_name:userName},{emulateJSON:true}).then(function(res){
+              // this.$message(res.body);
+              console.log('studentArr',res.body);
+              setTimeout(() => {
+                this.myCourseNumLoading = false;
+              },500)
+              this.searchMyCourse();
+            })
+          this.$message({type: 'success',message: '删除成功!'});
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          });          
+        });
+    },
+    handleCloseDialog(){
+      this.$refs["ruleForm"].resetFields();
+      this.isShowCreateCourse = false;
+    },
+    showMyCourseStudent(row){
+      this.isShowMyCourseStudent = true;
+      this.$http.post('../api/teacher/searchCourseStudent.php',{course_id:row.course_id},{emulateJSON:true}).then(function(res){
+        this.studentNum = res.body;
+        console.log(res.body)
+      })
+    }
+  }
+})
+</script>

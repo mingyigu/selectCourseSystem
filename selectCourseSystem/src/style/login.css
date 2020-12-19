@@ -1,0 +1,41 @@
+.backImg{
+  position:absolute;
+}
+
+.container{
+  position: relative;
+  width: 400px;
+  height: 400px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border:1px solid #0dbfdd;
+  display: flex;
+  flex-direction: column;
+  justify-content:space-around;
+  align-items: center;
+}
+.container #title{
+  font:20px large;
+  text-shadow: 1px 1px 8px #5e5656;
+}
+.form-input{
+  width: 300px;
+}
+
+.content{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#word{
+  margin-top:5px;
+  font-size: 18px;
+}
+#toRegister{
+  color:#0dbfdd;
+    cursor: pointer;
+    transition: all 0.4s;
+}
+#toRegister:hover{
+  color: #117688;
+}
